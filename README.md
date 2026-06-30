@@ -1,4 +1,7 @@
 # yolo-random
+<p align="center">
+<img src="yolo.jpg" width="800" alt="Mobile chat - Claude Code session" />
+</p>
 
 A Claude Code plugin that spends your **leftover quota** on real open-source.
 
