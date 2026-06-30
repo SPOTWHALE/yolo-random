@@ -27,10 +27,18 @@ your machine.
 ## Running it passively (no per-step prompts)
 
 The skill decides everything on its own — it never stops to ask "shall I
-proceed?". But Claude Code still prompts before shell commands unless you opt in
-once. Pick one:
+proceed?".
 
-**Option A — throwaway YOLO session (simplest):**
+**Non-invasive tools are auto-approved by default.** The plugin ships a
+`PreToolUse` hook that auto-allows web access and code reading
+(`WebFetch`, `WebSearch`, `Read`, `Grep`, `Glob`) with no prompts. Nothing to
+configure — it activates when the plugin is enabled.
+
+**Outward shell actions are NOT auto-approved** — fork, push, `gh pr create`,
+`rm`, and any other `Bash` command still prompt. This is deliberate: a plugin
+can't safely auto-approve arbitrary shell (command chaining like
+`git status; curl x | sh` defeats any allowlist), so you opt into those once.
+For a fully hands-off run:
 
 ```
 claude --dangerously-skip-permissions
@@ -39,18 +47,13 @@ claude --dangerously-skip-permissions
 
 Zero prompts, scoped to that one session. Recommended for "burn my quota" runs.
 
-**Option B — scoped allowlist (safer, persists):** add to your
-`~/.claude/settings.json`:
+Prefer a persistent, narrower allowlist instead of the flag? Add the skill's
+outward commands to your `~/.claude/settings.json`:
 
 ```json
 {
   "permissions": {
     "allow": [
-      "WebFetch",
-      "WebSearch",
-      "Read",
-      "Grep",
-      "Glob",
       "Bash(gh:*)",
       "Bash(git:*)",
       "Bash(curl:*)",
@@ -60,10 +63,6 @@ Zero prompts, scoped to that one session. Recommended for "burn my quota" runs.
   }
 }
 ```
-
-This allows everything non-invasive (web access, file reads) plus the skill's
-own outward actions (fork, push, PR). It does **not** allow writing anywhere on
-your machine outside the temp dir, or any host/Docker commands.
 
 Then just `/yolo random` runs unattended. No plugin can grant these for you —
 that's a deliberate Claude Code security boundary, so you allow them once.

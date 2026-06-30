@@ -1,0 +1,17 @@
+{
+  "description": "yolo-random: auto-approve non-invasive read-only tools (web + code reading).",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebFetch|WebSearch|Read|Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/auto-approve.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
