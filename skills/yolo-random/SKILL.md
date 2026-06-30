@@ -132,7 +132,8 @@ pick a different target instead of bothering the user.
 
    <how it was verified>
 
-   _Posted with AI assistance (Claude Code) as a suggestion for a maintainer to review and apply._
+   ---
+   _Posted with AI assistance via [yolo-random](https://github.com/SPOTWHALE/yolo-random) — leftover Claude Code quota spent on open source. A suggestion for a maintainer to review and apply._
    EOF
    )"
    ```
@@ -151,7 +152,8 @@ pick a different target instead of bothering the user.
 
    <what changed and why>
 
-   _Opened with AI assistance (Claude Code)._"
+   ---
+   _Opened with AI assistance via [yolo-random](https://github.com/SPOTWHALE/yolo-random) — leftover Claude Code quota spent on open source._"
    ```
 
 8. **Clean up:** `rm -rf "$d" /tmp/yolo.patch`. Report the comment/PR URL.
