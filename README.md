@@ -46,6 +46,11 @@ Zero prompts, scoped to that one session. Recommended for "burn my quota" runs.
 {
   "permissions": {
     "allow": [
+      "WebFetch",
+      "WebSearch",
+      "Read",
+      "Grep",
+      "Glob",
       "Bash(gh:*)",
       "Bash(git:*)",
       "Bash(curl:*)",
@@ -55,6 +60,10 @@ Zero prompts, scoped to that one session. Recommended for "burn my quota" runs.
   }
 }
 ```
+
+This allows everything non-invasive (web access, file reads) plus the skill's
+own outward actions (fork, push, PR). It does **not** allow writing anywhere on
+your machine outside the temp dir, or any host/Docker commands.
 
 Then just `/yolo random` runs unattended. No plugin can grant these for you —
 that's a deliberate Claude Code security boundary, so you allow them once.
