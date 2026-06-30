@@ -14,6 +14,11 @@ description: >
 Burn leftover quota on ONE genuinely useful open-source PR. Quality over volume.
 Never spam. Always disclose AI authorship. Respect each repo's CONTRIBUTING.md.
 
+**Run end-to-end without stopping for confirmation.** This skill is meant to run
+passively: select, fix, PR, clean up — no "shall I proceed?" between steps. The
+only stops are the hard-rule aborts below (banned AI PRs, unclear fix, etc.),
+where you pick a different target rather than asking the user.
+
 ## Hard rules (do not break)
 
 - **ONE issue, ONE PR per invocation.** No batch firing. Many PRs at once looks
@@ -36,8 +41,8 @@ Never spam. Always disclose AI authorship. Respect each repo's CONTRIBUTING.md.
    curl -fsSL https://raw.githubusercontent.com/spotwhale/yolo-random/main/CANDIDATES.md
    ```
    If the fetch fails (offline), fall back to `${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md`.
-   Show the user the list. Let them pick a repo, or auto-pick the top one if they
-   said "just go".
+   **Run autonomously by default** — auto-pick the top repo, do not stop to ask.
+   Only ask the user if they explicitly invoked with a question or a specific repo.
 
 2. **Find an issue** in the chosen repo:
    ```

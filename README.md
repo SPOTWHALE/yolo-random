@@ -24,11 +24,40 @@ your machine.
 /plugin install yolo-random@yolo-random
 ```
 
-Then:
+## Running it passively (no per-step prompts)
+
+The skill decides everything on its own — it never stops to ask "shall I
+proceed?". But Claude Code still prompts before shell commands unless you opt in
+once. Pick one:
+
+**Option A — throwaway YOLO session (simplest):**
 
 ```
-/yolo random
+claude --dangerously-skip-permissions
+> /yolo random
 ```
+
+Zero prompts, scoped to that one session. Recommended for "burn my quota" runs.
+
+**Option B — scoped allowlist (safer, persists):** add to your
+`~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(curl:*)",
+      "Bash(mktemp:*)",
+      "Bash(rm -rf /tmp/*)"
+    ]
+  }
+}
+```
+
+Then just `/yolo random` runs unattended. No plugin can grant these for you —
+that's a deliberate Claude Code security boundary, so you allow them once.
 
 ## Curating candidates
 
