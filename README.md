@@ -3,18 +3,31 @@
 A Claude Code plugin that spends your **leftover quota** on real open-source.
 
 Before your quota resets, run `/yolo random`. It picks one beginner-friendly
-issue from a curated opt-in list, fixes it in a throwaway temp dir, opens a
-single quality PR, and cleans up after itself. Nothing is installed or left on
-your machine.
+issue from a curated opt-in list, reads the code in a throwaway temp clone, and
+submits a fix — by one of two methods you choose.
+
+## Two methods
+
+| | **comment** (default, non-invasive) | **pr** (real contribution) |
+|---|---|---|
+| What | One issue comment: root cause + ready-to-apply diff | Fork the repo + open a real pull request |
+| Footprint | Zero — read-only temp clone, deleted after | A fork repo in your GitHub account |
+| Pros | No fork/PR, nothing in your account | Counts as a contribution (profile credit), CI runs, mergeable |
+| Cons | Not a PR — no profile credit, no CI, maintainer applies it | Leaves a fork in your account |
+
+Both sides have a say:
+
+- **Each repo** declares which methods it accepts in [`CANDIDATES.md`](./CANDIDATES.md)
+  (`comment`, `pr`, or `both`). The skill never uses a method a repo doesn't list.
+- **You** preset your preference: `/yolo random pr` or `/yolo random comment`. No
+  arg → the skill shows the table above and asks once, then runs autonomously.
 
 ## Principles
 
-- **One issue, one PR** per run. No spam, no batch firing.
-- **Opt-in repos only** — targets come from [`CANDIDATES.md`](./CANDIDATES.md),
-  repos that explicitly welcome outside contributions.
-- **Non-invasive** — all work happens in `mktemp -d`, deleted when done. Your
-  own projects are never touched.
-- **Honest** — every PR discloses AI authorship and respects the repo's
+- **One issue, one submission** per run. No spam, no batch firing.
+- **Opt-in repos only** — targets come from [`CANDIDATES.md`](./CANDIDATES.md).
+- **Non-invasive by default** — `comment` method touches nothing but a temp clone.
+- **Honest** — every submission discloses AI authorship and respects the repo's
   `CONTRIBUTING.md`.
 
 ## Install
@@ -34,7 +47,7 @@ proceed?".
 (`WebFetch`, `WebSearch`, `Read`, `Grep`, `Glob`) with no prompts. Nothing to
 configure — it activates when the plugin is enabled.
 
-**Outward shell actions are NOT auto-approved** — fork, push, `gh pr create`,
+**Shell actions are NOT auto-approved** — the temp clone, `gh issue comment`,
 `rm`, and any other `Bash` command still prompt. This is deliberate: a plugin
 can't safely auto-approve arbitrary shell (command chaining like
 `git status; curl x | sh` defeats any allowlist), so you opt into those once.
@@ -70,10 +83,11 @@ that's a deliberate Claude Code security boundary, so you allow them once.
 ## Curating candidates
 
 Edit [`CANDIDATES.md`](./CANDIDATES.md). Only add repos that welcome outside
-contributions and whose `CONTRIBUTING.md` does not ban AI-assisted PRs. The
-skill re-checks each repo's rules at run time, but the list is the first gate.
+contributions and whose `CONTRIBUTING.md` does not ban AI-assisted suggestions.
+The skill re-checks each repo's rules at run time, but the list is the first gate.
 
 ## Requirements
 
 - `gh` CLI, authenticated (`gh auth status`).
-- A GitHub account that can fork public repos.
+- `comment` method needs nothing more (read-only clones of public repos).
+- `pr` method also needs a GitHub account that can fork public repos.

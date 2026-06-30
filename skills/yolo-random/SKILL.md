@@ -2,89 +2,133 @@
 name: yolo-random
 description: >
   Spend leftover quota on ONE good open-source contribution. Picks a
-  beginner-friendly issue from the curated opt-in list in CANDIDATES.md, forks
-  the repo, fixes the issue in a throwaway temp dir, opens a single quality PR,
-  then deletes the temp dir. Quality over volume, never spam. Use when the user
-  says "/yolo random", "yolo random", "fix a random issue", or "use my leftover
-  quota on open source".
+  beginner-friendly issue from the curated opt-in list in CANDIDATES.md and
+  submits a fix by one of two methods: a non-invasive issue COMMENT (diff for a
+  maintainer to apply, no fork) or a real PULL REQUEST (fork + PR). Each candidate
+  repo declares which methods it accepts; the user picks their preferred method
+  (pros/cons below). Quality over volume, never spam. Use when the user says
+  "/yolo random", "yolo random", "solve a random issue", or "use my leftover
+  quota on open source". Optional arg: "pr" or "comment" to preset the method.
 ---
 
 # yolo-random
 
-Burn leftover quota on ONE genuinely useful open-source PR. Quality over volume.
-Never spam. Always disclose AI authorship. Respect each repo's CONTRIBUTING.md.
+Burn leftover quota on ONE genuinely useful open-source contribution. Quality
+over volume. Never spam. Always disclose AI authorship. Respect each repo's
+CONTRIBUTING.md.
 
-**Run end-to-end without stopping for confirmation.** This skill is meant to run
-passively: select, fix, PR, clean up — no "shall I proceed?" between steps. The
-only stops are the hard-rule aborts below (banned AI PRs, unclear fix, etc.),
-where you pick a different target rather than asking the user.
+**Run end-to-end without stopping for confirmation** once the method is decided.
+The only stops are the method choice (step 0, if not preset) and the hard-rule
+aborts below, where you pick a different target instead of asking.
+
+## The two methods
+
+| | **comment** (default, non-invasive) | **pr** (real contribution) |
+|---|---|---|
+| What | Post one issue comment: root cause + a ready-to-apply diff | Fork the repo, open a real pull request |
+| Footprint | Zero — only a read-only temp clone, deleted after | A fork repo in your GitHub account |
+| Pros | No fork, no PR, nothing in your account; lowest friction | Counts as a contribution (shows on your profile), CI runs, directly mergeable |
+| Cons | Not a PR — no profile credit, no CI, maintainer must apply it, lower acceptance | Leaves a fork in your account; more steps |
+
+## Choosing the method (two sides)
+
+- **Candidate (repo) side:** each entry in `CANDIDATES.md` has a `Method` field
+  listing what that repo accepts: `comment`, `pr`, or `both`. Never use a method
+  a repo does not list.
+- **Coder (user) side:** the user's preference comes from the invocation arg
+  (`/yolo random pr` or `/yolo random comment`). If no arg is given, present the
+  pros/cons table above and ask once which they prefer, then run autonomously.
+- **Reconcile:** use the user's preferred method if the chosen repo accepts it.
+  If it doesn't, tell the user and either use the method the repo does accept or
+  pick a different candidate that supports their preference.
 
 ## Hard rules (do not break)
 
-- **ONE issue, ONE PR per invocation.** No batch firing. Many PRs at once looks
-  like spam and gets the account flagged by GitHub.
-- **Opt-in repos only.** Pick the repo from the live `CANDIDATES.md` (see step 1).
-  Never invent a target repo.
-- **All work in a throwaway temp dir** from `mktemp -d`. `rm -rf` it at the end,
-  on success or failure. NEVER clone into the user's working directory or any of
-  their projects. Nothing persists on the user's machine.
-- **Disclose AI authorship** in the PR body. If the repo's CONTRIBUTING.md bans
-  AI/automated PRs or needs a CLA the user has not signed → abort, pick another.
-- **Minimal diff.** Only touch what the issue needs. Never edit unrelated files,
-  never touch CI config or secrets.
+- **ONE issue, ONE submission per invocation.** No batch firing — looks like spam,
+  gets the account flagged.
+- **Opt-in repos only**, from the live `CANDIDATES.md` (step 1). Never invent a target.
+- **Honor the repo's declared `Method`.** Never open a PR on a `comment`-only repo.
+- **All code reading in a throwaway temp dir** (`mktemp -d`), `rm -rf` at the end,
+  success or failure. Never clone into the user's projects.
+- **Disclose AI authorship** in the comment/PR body. If CONTRIBUTING.md bans
+  AI/automated contributions (or needs an unsigned CLA for the `pr` path) → abort,
+  pick another.
+- **Minimal diff.** Only what the issue needs. Never touch unrelated files, CI, or secrets.
 
 ## Steps
 
-1. **Read candidates (live).** Fetch the current list straight from GitHub so
-   curator edits apply without a plugin update:
+0. **Decide method.** Read the user's arg (`pr`/`comment`). If absent, show the
+   pros/cons table and ask once. Remember the choice for this run.
+
+1. **Read candidates (live):**
    ```
    curl -fsSL https://raw.githubusercontent.com/spotwhale/yolo-random/main/CANDIDATES.md
    ```
-   If the fetch fails (offline), fall back to `${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md`.
-   **Run autonomously by default** — auto-pick the top repo, do not stop to ask.
-   Only ask the user if they explicitly invoked with a question or a specific repo.
+   Fallback to `${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md` if offline. Auto-pick the top
+   repo whose `Method` supports the chosen method; do not stop to ask.
 
-2. **Find an issue** in the chosen repo:
+2. **Find an issue:**
    ```
    gh issue list --repo OWNER/REPO --state open \
      --label "good first issue" --json number,title,url,labels --limit 20
    ```
-   Pick one that: has no linked PR, is not contested in comments, has bounded
-   scope you can actually finish. If none fit, go back to step 1.
+   Pick one with no linked PR, not contested, bounded scope. None fit → back to step 1.
 
-3. **Check CONTRIBUTING.md** via `gh api`. If it bans AI/automated PRs or needs an
-   unsigned CLA → drop this repo, return to step 1.
+3. **Check CONTRIBUTING.md** via `gh api`. Bans AI / unsolicited contributions
+   (or unsigned CLA for `pr`) → drop repo, back to step 1.
 
-4. **Fork + clone the fork to temp:**
+4. **Read code in a temp clone** (public, read-only):
+   ```
+   d=$(mktemp -d); git clone --depth 1 "https://github.com/OWNER/REPO" "$d"
+   ```
+
+5. **Solve** inside `$d`: reproduce, root-cause, make the minimal change, run the
+   repo's tests if cheap. Capture the patch: `cd "$d" && git diff > /tmp/yolo.patch`.
+   Fix not clear after reading → abort, pick a different issue.
+
+6. **Submit, per chosen method:**
+
+   **comment:**
+   ```
+   gh issue comment NUMBER --repo OWNER/REPO --body "$(cat <<'EOF'
+   **Proposed fix for this issue**
+
+   Root cause: <one paragraph>
+
+   Suggested change:
+
+   ```diff
+   <contents of /tmp/yolo.patch>
+   ```
+
+   <how it was verified>
+
+   _Posted with AI assistance (Claude Code) as a suggestion for a maintainer to review and apply._
+   EOF
+   )"
+   ```
+
+   **pr** (only if repo's Method allows it):
    ```
    gh repo fork OWNER/REPO --clone=false
-   d=$(mktemp -d)
-   git clone --depth 1 "https://github.com/$(gh api user --jq .login)/REPO" "$d"
-   ```
-
-5. **Understand + fix** inside `$d`: reproduce the issue, find the root cause, make
-   the minimal change, add or adjust a test, run the repo's test command if cheap.
-   If the fix is not clear after reading → abort, pick a different issue. Do not
-   guess on someone else's codebase.
-
-6. **Commit + open PR:**
-   ```
-   cd "$d" && git checkout -b fix/issue-NUMBER
-   git commit -am "fix: <short summary> (#NUMBER)"
-   git push -u origin fix/issue-NUMBER
-   gh pr create --repo OWNER/REPO --head "$(gh api user --jq .login):fix/issue-NUMBER" \
+   me=$(gh api user --jq .login)
+   cd "$d" && git remote add fork "https://github.com/$me/REPO" \
+     && git checkout -b fix/issue-NUMBER \
+     && git commit -am "fix: <summary> (#NUMBER)" \
+     && git push -u fork fix/issue-NUMBER
+   gh pr create --repo OWNER/REPO --head "$me:fix/issue-NUMBER" \
      --title "fix: <summary>" \
      --body "Fixes #NUMBER
 
-<what changed and why>
+   <what changed and why>
 
-_Opened with AI assistance (Claude Code)._"
+   _Opened with AI assistance (Claude Code)._"
    ```
 
-7. **Clean up:** `rm -rf "$d"`. Report the PR URL to the user.
+7. **Clean up:** `rm -rf "$d" /tmp/yolo.patch`. Report the comment/PR URL.
 
 ## When unsure
 
-Ambiguous issue, contested in comments, fix not obvious after reading, or repo
-rules unclear → abort and pick another. A clean "found nothing worth a PR today"
-beats a low-quality drive-by PR that wastes a maintainer's time.
+Ambiguous issue, contested in comments, fix not obvious, or repo rules unclear →
+abort and pick another. A clean "found nothing worth submitting today" beats a
+low-quality drive-by that wastes a maintainer's time.

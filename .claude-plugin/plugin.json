@@ -1,7 +1,7 @@
 {
   "name": "yolo-random",
   "version": "0.1.0",
-  "description": "Spend leftover quota on one quality open-source PR. Picks a beginner-friendly issue from a curated opt-in list, fixes it in a temp dir, opens a single PR, cleans up.",
+  "description": "Spend leftover quota on one quality open-source contribution. Picks a beginner-friendly issue from a curated opt-in list and submits a fix as a non-invasive issue comment or a real PR — your choice, and the repo's.",
   "author": {
     "name": "spotwhale",
     "url": "https://github.com/spotwhale"

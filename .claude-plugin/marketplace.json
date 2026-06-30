@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "yolo-random",
-      "description": "Picks a beginner-friendly issue from a curated opt-in list, fixes it in a temp dir, opens one PR, cleans up.",
+      "description": "Picks a beginner-friendly issue from a curated opt-in list and submits a fix as a non-invasive issue comment or a real PR — user's choice, within what each repo accepts.",
       "source": "./",
       "category": "productivity"
     }
