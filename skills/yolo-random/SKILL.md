@@ -17,9 +17,10 @@ Burn leftover quota on ONE genuinely useful open-source contribution. Quality
 over volume. Never spam. Always disclose AI authorship. Respect each repo's
 CONTRIBUTING.md.
 
-**Run end-to-end without stopping for confirmation** once the method is decided.
-The only stops are the method choice (step 0, if not preset) and the hard-rule
-aborts below, where you pick a different target instead of asking.
+**Mostly autonomous, with two deliberate stops:** the method choice (step 0, if
+not preset) and a confirmation of the selected repo+issue before any work
+(step 4). Everything else runs without asking. Hard-rule aborts below mean you
+pick a different target instead of bothering the user.
 
 ## The two methods
 
@@ -54,6 +55,12 @@ aborts below, where you pick a different target instead of asking.
   AI/automated contributions (or needs an unsigned CLA for the `pr` path) → abort,
   pick another.
 - **Minimal diff.** Only what the issue needs. Never touch unrelated files, CI, or secrets.
+- **NEVER execute the target repo's code.** No `npm/pip/cargo/go/make` install,
+  build, test, or run — those run arbitrary code from an untrusted repo (e.g. a
+  malicious `postinstall` script). Reason about correctness statically; the
+  maintainer's own CI validates the patch. Reading files is safe; running them is not.
+- **Vet every repo at run time, even curated ones** (step 3). A curated list can
+  go stale or an entry can be a typosquat — re-check before cloning.
 
 ## Steps
 
@@ -74,19 +81,41 @@ aborts below, where you pick a different target instead of asking.
    ```
    Pick one with no linked PR, not contested, bounded scope. None fit → back to step 1.
 
-3. **Check CONTRIBUTING.md** via `gh api`. Bans AI / unsolicited contributions
-   (or unsigned CLA for `pr`) → drop repo, back to step 1.
+3. **Vet the repo (even if curated)** before cloning:
+   ```
+   gh api repos/OWNER/REPO --jq '{stars:.stargazers_count, archived, disabled, fork, pushed_at, license:.license.spdx_id}'
+   gh api "repos/OWNER/REPO/contributors?per_page=100" --jq 'length'   # contributor count
+   ```
+   Drop the repo (→ back to step 1) if ANY of: archived, disabled, a fork,
+   stars < 25, fewer than 2 contributors, no push in the last ~12 months. Also
+   check CONTRIBUTING.md via `gh api` — bans AI/unsolicited contributions (or
+   unsigned CLA for `pr`) → drop. These checks run for curated repos too.
 
-4. **Read code in a temp clone** (public, read-only):
+4. **Confirm with the user before doing any work.** Show:
+   `Selected OWNER/REPO (★ stars, N contributors, last push DATE) — issue #NUM: "title" [URL]`
+   and ask: **continue / pick another / abort.** Wait for the answer. (This is the
+   one deliberate stop — the rest runs autonomously once they say continue.)
+
+5. **Clone, then scan before reading** (public, read-only — cloning does not
+   execute anything):
    ```
    d=$(mktemp -d); git clone --depth 1 "https://github.com/OWNER/REPO" "$d"
    ```
+   Scan the working tree and abort (→ pick another) if it looks hostile:
+   - Executables / binaries where source is expected: `*.exe *.dll *.so *.dylib
+     *.bin *.msi *.scr`, or any tracked file >5 MB.
+   - Install-time code execution: `postinstall`/`preinstall` scripts in
+     `package.json`, network calls in `setup.py`, committed `.git/hooks`, or
+     obfuscated/minified blobs unrelated to the issue.
+   - If `clamscan` happens to be installed, run it on `$d` as a bonus; do not
+     require or install it.
 
-5. **Solve** inside `$d`: reproduce, root-cause, make the minimal change, run the
-   repo's tests if cheap. Capture the patch: `cd "$d" && git diff > /tmp/yolo.patch`.
-   Fix not clear after reading → abort, pick a different issue.
+6. **Solve — static only, NEVER run the repo's code** (see hard rules): reproduce
+   by reading, root-cause, make the minimal change in the working tree. Capture the
+   patch: `cd "$d" && git diff > /tmp/yolo.patch`. Fix not clear after reading, or
+   confirming it would require executing untrusted code → abort, pick another.
 
-6. **Submit, per chosen method:**
+7. **Submit, per chosen method:**
 
    **comment:**
    ```
@@ -125,7 +154,7 @@ aborts below, where you pick a different target instead of asking.
    _Opened with AI assistance (Claude Code)._"
    ```
 
-7. **Clean up:** `rm -rf "$d" /tmp/yolo.patch`. Report the comment/PR URL.
+8. **Clean up:** `rm -rf "$d" /tmp/yolo.patch`. Report the comment/PR URL.
 
 ## When unsure
 
