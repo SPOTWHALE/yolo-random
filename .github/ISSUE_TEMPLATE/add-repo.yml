@@ -1,0 +1,42 @@
+name: Add my repo to candidates
+description: Submit a public repo for the /yolo random candidate list. No fork needed.
+title: "[candidate] OWNER/REPO"
+labels: ["candidate"]
+body:
+  - type: input
+    id: repo
+    attributes:
+      label: Repository (owner/name)
+      placeholder: octocat/hello-world
+    validations:
+      required: true
+  - type: input
+    id: label
+    attributes:
+      label: Issue label to pull from
+      description: The label the skill should filter issues by.
+      value: good first issue
+    validations:
+      required: true
+  - type: dropdown
+    id: method
+    attributes:
+      label: Preferred submission method
+      description: How should fixes be submitted to your repo?
+      options:
+        - comment (issue comment with a diff, no fork/PR)
+        - pr (a real pull request)
+        - both
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: I maintain this repo, or it clearly welcomes outside contributions.
+          required: true
+        - label: Its CONTRIBUTING.md does not ban AI-assisted contributions.
+          required: true
+        - label: The repo is actively maintained (a commit in the last ~6 months).
+          required: true

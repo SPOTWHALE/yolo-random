@@ -83,11 +83,20 @@ outward commands to your `~/.claude/settings.json`:
 Then just `/yolo random` runs unattended. No plugin can grant these for you —
 that's a deliberate Claude Code security boundary, so you allow them once.
 
+## Submit your repo (no fork needed)
+
+Maintainers: open an issue with the
+[**Add my repo**](../../issues/new?template=add-repo.yml) form. Opening an issue
+needs no fork. Pick your preferred method (`comment` / `pr` / `both`) and confirm
+the basics; a curator reviews and adds you to `CANDIDATES.md`.
+
 ## Curating candidates
 
-Edit [`CANDIDATES.md`](./CANDIDATES.md). Only add repos that welcome outside
-contributions and whose `CONTRIBUTING.md` does not ban AI-assisted suggestions.
-The skill re-checks each repo's rules at run time, but the list is the first gate.
+Curators: review `candidate`-labeled issues and add accepted repos to
+[`CANDIDATES.md`](./CANDIDATES.md) with the right `Method`. Only add repos that
+welcome outside contributions and whose `CONTRIBUTING.md` does not ban AI-assisted
+contributions. The skill re-checks each repo's rules at run time, but the list is
+the first gate.
 
 ## Requirements
 
