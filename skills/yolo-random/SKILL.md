@@ -18,8 +18,8 @@ Never spam. Always disclose AI authorship. Respect each repo's CONTRIBUTING.md.
 
 - **ONE issue, ONE PR per invocation.** No batch firing. Many PRs at once looks
   like spam and gets the account flagged by GitHub.
-- **Opt-in repos only.** Pick the repo from `CANDIDATES.md` at the plugin root
-  (`${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md`). Never invent a target repo.
+- **Opt-in repos only.** Pick the repo from the live `CANDIDATES.md` (see step 1).
+  Never invent a target repo.
 - **All work in a throwaway temp dir** from `mktemp -d`. `rm -rf` it at the end,
   on success or failure. NEVER clone into the user's working directory or any of
   their projects. Nothing persists on the user's machine.
@@ -30,8 +30,14 @@ Never spam. Always disclose AI authorship. Respect each repo's CONTRIBUTING.md.
 
 ## Steps
 
-1. **Read candidates.** Read `${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md`. Show the user
-   the list. Let them pick a repo, or auto-pick the top one if they said "just go".
+1. **Read candidates (live).** Fetch the current list straight from GitHub so
+   curator edits apply without a plugin update:
+   ```
+   curl -fsSL https://raw.githubusercontent.com/spotwhale/yolo-random/main/CANDIDATES.md
+   ```
+   If the fetch fails (offline), fall back to `${CLAUDE_PLUGIN_ROOT}/CANDIDATES.md`.
+   Show the user the list. Let them pick a repo, or auto-pick the top one if they
+   said "just go".
 
 2. **Find an issue** in the chosen repo:
    ```
