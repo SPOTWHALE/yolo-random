@@ -1,1 +1,3 @@
-blank_issues_enabled: false
+# Keep blank issues on so plugin bug reports still have a home;
+# the "Add my repo" form stays the suggested path for repo submissions.
+blank_issues_enabled: true
