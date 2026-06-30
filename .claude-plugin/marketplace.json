@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "yolo-random",
+  "description": "Burn leftover quota on real open-source. One curated issue, one quality PR, zero spam.",
+  "owner": {
+    "name": "spotwhale",
+    "url": "https://github.com/spotwhale"
+  },
+  "plugins": [
+    {
+      "name": "yolo-random",
+      "description": "Picks a beginner-friendly issue from a curated opt-in list, fixes it in a temp dir, opens one PR, cleans up.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
