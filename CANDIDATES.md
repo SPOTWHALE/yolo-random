@@ -20,9 +20,11 @@ Each repo declares a **`Method`** — how it wants fixes submitted:
 
 ## List
 
+<!-- candidates:start -->
 | Repo | Issue label | Method | Notes |
 |------|-------------|--------|-------|
 | _add yours here_ | `good first issue` | `both` | confirmed welcomes contributions |
+<!-- candidates:end -->
 
 <!--
 Seed examples below are well-known repos with established good-first-issue

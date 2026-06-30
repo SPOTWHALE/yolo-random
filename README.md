@@ -1,11 +1,11 @@
 # yolo-random
 <p align="center">
-<img src="yolo.jpg" width="800" alt="Mobile chat - Claude Code session" />
+<a href="https://github.com/SPOTWHALE/yolo-random/stargazers"><img src="https://img.shields.io/github/stars/SPOTWHALE/yolo-random?style=flat-square" alt="Stars" /></a>
+<img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SPOTWHALE/yolo-random/main/.github/badges/candidates.json&style=flat-square" alt="Candidates" />
 </p>
 
 <p align="center">
-<a href="https://github.com/SPOTWHALE/yolo-random/stargazers"><img src="https://img.shields.io/github/stars/SPOTWHALE/yolo-random?style=flat-square" alt="Stars" /></a>
-<a href="https://github.com/SPOTWHALE/yolo-random/issues?q=is%3Aissue+label%3Acandidate"><img src="https://img.shields.io/github/issues-search/SPOTWHALE/yolo-random?query=label%3Acandidate&label=candidate%20submissions&style=flat-square" alt="Candidate submissions" /></a>
+<img src="yolo.jpg" width="800" alt="Mobile chat - Claude Code session" />
 </p>
 
 A Claude Code plugin that spends your **leftover quota** on real open-source.
